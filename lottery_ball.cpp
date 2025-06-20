@@ -12,8 +12,8 @@ std::uniform_int_distribution<> dist(1, 100);
 
 
 const int CONST_GUESS{dist(gen)};   // constant guess
-int random_guess{dist(gen)};
-int lotteryNum{dist(gen)};          // random lottery number
+int random_guess{dist(gen)};        // random guess
+int lotteryNum;                     // initialize random lottery number variable
 
 int perSimConstGuesses[100000];      // array for number of guesses per simulation  (same guess each time)
 int perSimRandomGuesses[100000];       // array for number of guesses per simulation (new random guess each time)
@@ -25,6 +25,7 @@ int totalConstGuesses{0};
 for (int i = 0; i < 100000; i++) {
     int constGuessCount{1};
     int randomGuessCount{1};
+    lotteryNum = dist(gen);
 
     // same guess strategy
     while (CONST_GUESS != lotteryNum) {
@@ -32,7 +33,8 @@ for (int i = 0; i < 100000; i++) {
         lotteryNum = dist(gen);                 // generate new lottery number
     }
     perSimConstGuesses[i] = constGuessCount;     // assign total number of guesses to array at current index
-    totalConstGuesses += constGuessCount;
+    totalConstGuesses += constGuessCount;        // add this iterations guess count to total guess count
+    lotteryNum = dist(gen);                      // reset lottery number for random guess
 
     // random guess strategy
     while (random_guess != lotteryNum) {
