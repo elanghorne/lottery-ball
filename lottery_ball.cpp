@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <numeric>
 
 
 int main() {
@@ -18,16 +19,20 @@ int lotteryNum;                     // initialize random lottery number variable
 int perSimConstGuesses[100000];      // array for number of guesses per simulation  (same guess each time)
 int perSimRandomGuesses[100000];       // array for number of guesses per simulation (new random guess each time)
 int perSimAlternatingGuesses[100000];
+int perSimOrderedGuesses[100000];
+
 
 // variables to hold total number of guesses (for calculating average)
 int totalRandomGuesses{0};
 int totalConstGuesses{0};
 int totalAlternatingGuesses{0};
+int totalOrderedGuesses{0};
 
 for (int i = 0; i < 100000; i++) {
     int constGuessCount{1};
     int randomGuessCount{1};
     int alternatingGuessCount{1};
+    int orderedGuessCount{1};
     lotteryNum = dist(gen);
 
     // same guess strategy
@@ -62,22 +67,58 @@ for (int i = 0; i < 100000; i++) {
     }
     perSimAlternatingGuesses[i] = alternatingGuessCount;
     totalAlternatingGuesses += alternatingGuessCount;
+    lotteryNum = dist(gen);                     // reset lottery number for alternating guess
+
+
+    // next strategy: guess 1 through 100 in order on repeat
+    std::vector<int> orderedGuesses(100);
+    std::iota(orderedGuesses.begin(), orderedGuesses.end(), 1);
+    int orderedGuess = orderedGuesses[0];
+    int timesThroughAllGuesses{0};
+
+    while (orderedGuess != lotteryNum) {
+        bool numHasBeenGuessed = false;
+
+        for (int k = 1; k < 100; k++) {
+            orderedGuess = orderedGuesses[k];
+            lotteryNum = dist(gen);
+            orderedGuessCount += 1;
+
+            if (orderedGuess == lotteryNum) {
+                numHasBeenGuessed = true;
+                break;
+            } else {
+                continue;
+            }
+        }
+        if (!numHasBeenGuessed) {
+            timesThroughAllGuesses += 1;
+        }
+    }
+    orderedGuessCount += (100 * timesThroughAllGuesses);
+    perSimOrderedGuesses[i] = orderedGuessCount;
+    totalOrderedGuesses += orderedGuessCount;
+
 }
 
 
 double averageConstGuesses;
 double averageRandomGuesses;
 double averageAlternatingGuesses;
+double averageOrderedGuesses;
 
 
 averageConstGuesses = (totalConstGuesses / 100000.0);
 averageRandomGuesses = (totalRandomGuesses / 100000.0);
 averageAlternatingGuesses = (totalAlternatingGuesses / 100000.0);
+averageOrderedGuesses = (totalOrderedGuesses / 100000.0);
 
 
 std::cout << "Average number of guesses when guessing the same number every time: " << averageConstGuesses << std::endl;
 std::cout << "Average number of guesses when guessing a random number every time: " << averageRandomGuesses << std::endl;
-std::cout << "Average number of guesses when guessing a random number every time: " << averageAlternatingGuesses << std::endl;
+std::cout << "Average number of guesses when alternating between 2 guesses: " << averageAlternatingGuesses << std::endl;
+std::cout << "Average number of guesses when guessing 1-100 in order: " << averageOrderedGuesses << std::endl;
+
 
 
 
