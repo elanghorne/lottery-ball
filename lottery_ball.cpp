@@ -4,6 +4,14 @@
 #include <numeric>
 
 
+/*****************************************************************************************************
+ *  Script for testing PMT Lottery Ball guess strategies. Can't really get any better                *
+ *  than 100 average guesses, but it's fun scripting out different ways to approach the game. Now    *
+ *  that I've found a strategy that is significantly worse than 1/100, I guess I can focus on        *
+ *  finding strategies that are somehow not 1/100.                                                   *    
+ *****************************************************************************************************/
+
+
 int main() {
 // rng 
 std::random_device rd;
@@ -70,7 +78,7 @@ for (int i = 0; i < 100000; i++) {
     lotteryNum = dist(gen);                     // reset lottery number for alternating guess
 
 
-    // next strategy: guess 1 through 100 in order on repeat
+    // strategy: guess 1 through 100 in order on repeat (terrible strategy)
     std::vector<int> orderedGuesses(100);
     std::iota(orderedGuesses.begin(), orderedGuesses.end(), 1);
     int orderedGuess = orderedGuesses[0];
@@ -99,6 +107,10 @@ for (int i = 0; i < 100000; i++) {
     perSimOrderedGuesses[i] = orderedGuessCount;
     totalOrderedGuesses += orderedGuessCount;
 
+
+    /* next strategy: guess a random number in the bottom 10-20% of occurrences
+    * - will need to keep track of lotteryNum occurences at each value
+    */
 }
 
 
